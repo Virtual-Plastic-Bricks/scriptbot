@@ -1,4 +1,5 @@
 mod bot;
+mod config;
 
 use serenity::client::bridge::gateway::GatewayIntents;
 use serenity::client::Client;
@@ -7,7 +8,7 @@ use serenity::client::Client;
 async fn main() {
     let token = std::env::args().nth(1).expect("No token supplied");
     let mut client = Client::new(token)
-        .event_handler(bot::Bot)
+        .event_handler(bot::Bot::new(config::Config::load("bot.toml")))
         .intents(GatewayIntents::GUILD_MESSAGES)
         .await
         .expect("Error creating client");

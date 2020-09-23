@@ -1,8 +1,19 @@
 use serenity::async_trait;
 use serenity::prelude::*;
 use serenity::model::prelude::*;
+use crate::config::Config;
 
-pub struct Bot;
+pub struct Bot {
+    config: Config
+}
+
+impl Bot {
+    pub fn new(config: Config) -> Self {
+        Bot { // Makes init simple if there's other internal fields
+            config
+        }
+    }
+}
 
 #[async_trait]
 impl EventHandler for Bot {
