@@ -8,8 +8,8 @@ use std::io::Read;
 // God forbid should anything else happen.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
-    deployed_server_id: GuildId,
-    question_channel: ChannelId
+    pub deployed_server_id: GuildId,
+    pub question_channel: ChannelId
 }
 
 impl Config {
