@@ -2,21 +2,24 @@ use serenity::async_trait;
 use serenity::prelude::*;
 use serenity::model::prelude::*;
 use crate::config::Config;
+use crate::db::DB;
 
-pub struct Bot {
-    config: Config
+pub struct Bot<Data: DB> {
+    config: Config,
+    data: Data
 }
 
-impl Bot {
-    pub fn new(config: Config) -> Self {
+impl<Data: DB> Bot<Data> {
+    pub fn new(config: Config, data: Data) -> Self {
         Bot { // Makes init simple if there's other internal fields
-            config
+            config,
+            data
         }
     }
 }
 
 #[async_trait]
-impl EventHandler for Bot {
+impl<Data: DB> EventHandler for Bot<Data> {
     async fn message(&self, _ctx: Context, message: Message) {
         // Is the message in the question-asking channel?
         // Yes? Perfect. Check that it's a question. If it's not a question, it's a mini-mute.
