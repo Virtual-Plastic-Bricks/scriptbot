@@ -37,7 +37,7 @@ impl<Data: DB> EventHandler for Bot<Data> {
                 // .category(self.config.question_category)
                 .kind(ChannelType::Text)
                 // .permissions(new_user_perms) // Hide all + show owner + show bot
-            );
+            ).await;
             // Request more information (if needed) and open to public once available
             // Look for: answer cmd, close cmd, accept cmd
             // When answer accepted, delete channel (w/ saved results) + open Q chan to user again
@@ -45,7 +45,6 @@ impl<Data: DB> EventHandler for Bot<Data> {
             // Mini-mute for shitty non-question
             // Tell the user why. Feed them their question for good measure.
         }
-
         unimplemented!()
     }
 }

@@ -2,6 +2,7 @@ use super::*;
 // I called this module sled and made the module public. Whoops.
 use ::sled::{Tree, Db};
 use std::path::Path;
+use serenity::model::id::{UserId, MessageId, ChannelId}
 
 pub struct SledDB {
     db: Db,
@@ -30,5 +31,13 @@ impl SledDB {
 }
 
 impl DB for SledDB {
-
+    fn get_user(&self, user: UserId) -> User {
+        self.user_tree
+        User {}
+    }
+    fn get_answer(&self, _: AnswerId) -> Answer { todo!() }
+    fn get_question(&self, _: QuestionId) -> Question { todo!() }
+    fn get_answers_for_question(&self, _: QuestionId) -> std::vec::Vec<Answer> { todo!() }
+    fn get_message_info(&self, _: MessageId) -> MessageInfo { todo!() }
+    fn get_channel_info(&self, _: ChannelId) -> ChannelInfo { todo!() }
 }
