@@ -18,7 +18,7 @@ pub trait DB: Sync+Send {
 }
 
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
-pub struct AnswerId(u64);
+pub struct AnswerId(QuestionId, u64); // Bite me.
 
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 pub struct QuestionId(u64);
