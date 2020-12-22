@@ -37,26 +37,26 @@ impl SledDB {
 
 macro_rules! parse_simple {
     ($e:expr) => {
-        $e.unwrap().map(|data|mp_from(data).unwrap()).unwrap_or_default()
+        $e.unwrap().map(|data|mp_from(&*data).unwrap()).unwrap_or_default()
     };
 }
 
 impl DB for SledDB {
     fn get_user(&self, user: UserId) -> User {
         User {
-            id: &*user,
+            id: user,
             ..parse_simple!( self.users.get(user.key()))
         }
     }
     fn get_answer(&self, answer: AnswerId) -> Answer {
         Answer {
-            id: &*answer,
+            id: answer,
             ..parse_simple!(self.answers.get(answer.key()))
         }
     }
     fn get_question(&self, question: QuestionId) -> Question {
         Question {
-            id: &*question,
+            id: question,
             ..parse_simple!(self.questions.get(question.key()))
         }
     }
@@ -65,7 +65,7 @@ impl DB for SledDB {
             let (answer_key, answer_data) = answer.unwrap();
             Answer {
                 id: answer_id_from_key(&answer_key),
-                ..mp_from(answer_data).unwrap() // I have written a fucking bomb.
+                ..mp_from(&*answer_data).unwrap() // I have written a fucking bomb.
             }
         }).collect()
     }
@@ -74,13 +74,13 @@ impl DB for SledDB {
         // A(messageId) but then I changed AnswerId to be (QuestionId, u64) as it should be and
         // honestly my life is over because now I really do have to maintain a secondary index.
         MessageInfo {
-            id: &*message,
+            id: message,
             ..parse_simple!(self.messages.get(message.key()))
         }
     }
     fn get_channel_info(&self, channel: ChannelId) -> ChannelInfo {
         ChannelInfo {
-            id: &*channel,
+            id: channel,
             ..parse_simple!(self.channels.get(channel.key()))
         }
     }
