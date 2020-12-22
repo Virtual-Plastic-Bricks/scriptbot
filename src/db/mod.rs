@@ -17,32 +17,32 @@ pub trait DB: Sync+Send {
     fn get_channel_info(&self, channel_id: ChannelId) -> ChannelInfo;
 }
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Default)]
 pub struct AnswerId(QuestionId, u64); // Bite me.
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Default)]
 pub struct QuestionId(u64);
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Default)]
 pub struct User {
     #[serde(skip)]
     id: UserId,
 }
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Default)]
 pub struct Answer {
     #[serde(skip)]
     id: AnswerId,
 }
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Default)]
 pub struct Question {
     #[serde(skip)]
     id: QuestionId,
 
 }
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Default)]
 pub struct MessageInfo {
     #[serde(skip)]
     id: MessageId,
@@ -53,7 +53,7 @@ pub struct MessageInfo {
     // Probably enum instead honestly
 }
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Default)]
 pub struct ChannelInfo {
     #[serde(skip)]
     id: ChannelId,
