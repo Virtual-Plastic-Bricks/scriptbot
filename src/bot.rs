@@ -44,6 +44,11 @@ impl<Data: DB> EventHandler for Bot<Data> {
         } else {
             // Mini-mute for shitty non-question
             // Tell the user why. Feed them their question for good measure.
+
+            // I wrote that comment months ago and I'm not sure why - I'm pretty sure I planned to
+            // allow users to discuss their questions and flesh them out before asking it to the bot
+            // (which would collect extra information anyway)
+            // So this branch might just have a crappy condition.
         }
         unimplemented!()
     }
