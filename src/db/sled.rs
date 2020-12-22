@@ -3,6 +3,8 @@ use super::*;
 use ::sled::{Tree, Db};
 use std::path::Path;
 use serenity::model::id::{UserId, MessageId, ChannelId};
+use rmp_serde::{Deserializer, Serializer, from_read as mp_from};
+use std::convert::TryInto;
 
 pub struct SledDB {
     db: Db,
@@ -33,35 +35,54 @@ impl SledDB {
     }
 }
 
+macro_rules! parse_simple {
+    ($e:expr) => {
+        $e.unwrap().map(|data|mp_from(data).unwrap()).unwrap_or_default()
+    };
+}
+
 impl DB for SledDB {
     fn get_user(&self, user: UserId) -> User {
-        let user_data = self.users.get(user.key()).unwrap();
-        User {}
+        User {
+            id: &*user,
+            ..parse_simple!( self.users.get(user.key()))
+        }
     }
     fn get_answer(&self, answer: AnswerId) -> Answer {
-        let answer_data = self.answers.get(answer.key()).unwrap();
-        Answer {}
+        Answer {
+            id: &*answer,
+            ..parse_simple!(self.answers.get(answer.key()))
+        }
     }
     fn get_question(&self, question: QuestionId) -> Question {
-        let question_data = self.questions.get(question.key()).unwrap();
-        Question {}
+        Question {
+            id: &*question,
+            ..parse_simple!(self.questions.get(question.key()))
+        }
     }
     fn get_answers_for_question(&self, question: QuestionId) -> Vec<Answer> {
-        let answers = self.questions.scan_prefix(question.key()).map(|answer| {
-            let answer_data = answer.unwrap();
-            Answer {}
-        }).collect();
+        self.questions.scan_prefix(question.key()).map(|answer| {
+            let (answer_key, answer_data) = answer.unwrap();
+            Answer {
+                id: answer_id_from_key(&answer_key),
+                ..mp_from(answer_data).unwrap() // I have written a fucking bomb.
+            }
+        }).collect()
     }
     fn get_message_info(&self, message: MessageId) -> MessageInfo {
         // Getting message info was supposed to be simple because I could check if Q(messageId) or
         // A(messageId) but then I changed AnswerId to be (QuestionId, u64) as it should be and
         // honestly my life is over because now I really do have to maintain a secondary index.
-        let message_data = self.messages.get(message.key()).unwrap();
-        Default::default()
+        MessageInfo {
+            id: &*message,
+            ..parse_simple!(self.messages.get(message.key()))
+        }
     }
     fn get_channel_info(&self, channel: ChannelId) -> ChannelInfo {
-        let channel_data = self.channels.get(channel.key()).unwrap();
-        Default::default()
+        ChannelInfo {
+            id: &*channel,
+            ..parse_simple!(self.channels.get(channel.key()))
+        }
     }
 }
 
@@ -96,6 +117,14 @@ impl SledKey for AnswerId {
     }
 }
 
+fn answer_id_from_key(key: &[u8]) -> AnswerId {
+    let (question_slice, answer_slice) = key.split_at(8);
+    AnswerId(
+        QuestionId(u64::from_be_bytes(question_slice.try_into().unwrap())),
+        u64::from_be_bytes(answer_slice.try_into().unwrap())
+    )
+}
+
 // There is not a way that I'm aware of to produce a macro which can template the format
 /*
 impl SledKey for $type {
@@ -103,5 +132,5 @@ impl SledKey for $type {
         $expr_using_self
     }
 }
- */
+*/
 // Because there is no way to capture the `self` declared inside of the macro
